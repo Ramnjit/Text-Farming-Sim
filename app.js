@@ -8,7 +8,7 @@ let plots = [
         age: "",
         watered: false,
         readyForHarvest: false,
-        occupyingPlot: false,        
+        occupyingPlot: false,
     },
     {
         nameOfplant: "",
@@ -17,7 +17,7 @@ let plots = [
         age: "",
         watered: false,
         readyForHarvest: false,
-        occupyingPlot: false,        
+        occupyingPlot: false,
     },
     {
         nameOfplant: "",
@@ -26,7 +26,7 @@ let plots = [
         age: "",
         watered: false,
         readyForHarvest: false,
-        occupyingPlot: false,                
+        occupyingPlot: false,
     }
 ];
 
@@ -43,21 +43,21 @@ function mainFunc() {
     while (!gameOver) {
 
         energy = 30;
-        console.log(`It is day: ${day}`);        
+        console.log(`It is day: ${day}`);
         console.log(`Your energy is ${energy}`);
         console.log(`Your money  is $${money}`);
 
-        if(inventory.length>0){
-            console.log(inventory[0]);            
+        if (inventory.length > 0) {
+            console.log(inventory);
         }
-        
+
         while (!dayOver) {
 
             console.log("Main Menu");
             console.log(`Your Current energy is: ${energy}`);
             input = prompt("Enter a command: farm, store, end, quit");
 
-            if(input === "end"){
+            if (input === "end") {
                 dayOver = true;
                 day++;
                 endDay();
@@ -74,7 +74,7 @@ function mainFunc() {
                     checkFarm();
                 }
 
-                else if(input === "store"){
+                else if (input === "store") {
                     checkStore();
                 }
 
@@ -82,7 +82,7 @@ function mainFunc() {
                     dayOver = true;
                     day++;
                     endDay();
-                }                 
+                }
             }
         }
 
@@ -111,46 +111,46 @@ function checkStore() {
     let doneWithScene = false;
 
     while (!doneWithScene) {
-        if(input === "check-price"){
+        if (input === "check-price") {
             thisInput = prompt("Which Plant?");
-                if(thisInput < inventory.length){
-    
-                    let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
-                    console.log(`I will pay you $${price} for that.`)
-                }
-                else{
-                    console.log("That is an invalid value")
-                }
-        }
-    
-        if(input === "sell"){
-            thisInput = prompt("Which Plant?");
-            if(thisInput < inventory.length){
-    
+            if (thisInput < inventory.length) {
+
                 let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
-                sellPlant(inventory[thisInput].name, inventory[thisInput].age);
-    
-                console.log(`You got $${price} for that!`)
-                console.log(`Money: ${money}`);
-    
-                
-    
+                console.log(`I will pay you $${price} for that.`)
             }
-            else{
+            else {
                 console.log("That is an invalid value")
             }
         }
-    
+
+        if (input === "sell") {
+            thisInput = prompt("Which Plant?");
+            if (thisInput < inventory.length) {
+
+                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
+                sellPlant(thisInput, inventory[thisInput].name, inventory[thisInput].age);
+
+                console.log(`You got $${price} for that!`)
+                console.log(`Money: ${money}`);
+
+
+
+            }
+            else {
+                console.log("That is an invalid value")
+            }
+        }
+
         //can sell crops here
-    
+
         //can buy crop seeds -> tomatos, onions or potatoes seeds.
 
 
-        if(input ==="done"){
+        if (input === "done") {
             doneWithScene = true;
         }
 
-        if(!doneWithScene){
+        if (!doneWithScene) {
             input = prompt("Do you want to sell or buy?: sell, check-price, done")
         }
     }
@@ -162,63 +162,62 @@ function endDay() {
         if (plots[i].occupyingPlot) {
             plots[i].age = day - parseInt(plots[i].dayPlanted);
         }
-        
-        if(!plots[i].watered){
+
+        if (!plots[i].watered) {
             plots[i].health -= 10;
         }
-        else{
+        else {
             plots[i].watered = false;
         }
-        
-        if(plots[i].health <=0){
+
+        if (plots[i].health <= 0) {
             clearPlant(i);
         }
 
         checkPlantHarvest(plots[i]);
 
-        //check if plant is ready to harvest, this is different for each type
-
     }
 }
 
-function checkPlantHarvest(plant){
+function checkPlantHarvest(plant) {
 
-    if(plant.nameOfplant === "Tomato"){
+    if (plant.nameOfplant === "Tomato") {
 
-        if(plant.age > 3){
+        if (plant.age > 3) {
             plant.readyForHarvest = true;
         }
     }
 }
 
-function checkPlantPrice(name, health){
+function checkPlantPrice(name, health) {
 
-    if(name === "Tomato"){
-        if(health > 30){
+    if (name === "Tomato") {
+        if (health > 30) {
             return 100;
         }
-        else{
+        else {
             return 50;
         }
     }
 
 }
 
-function sellPlant(name, health){
+function sellPlant(inventoryNumber, name, health) {
 
-    inventory.splice(name, 1);
+    //this ends up selling all of the name tomato...we need to just sell the one you pick
+    inventory.splice(inventoryNumber, 1);
     money = money + checkPlantPrice(name, health);
 
 }
 
-function clearPlant(num){
+function clearPlant(num) {
     plots[num].dayPlanted = 0;
     plots[num].age = 0;
     plots[num].nameOfplant = "";
     plots[num].occupyingPlot = false;
     plots[num].health = 0;
     plots[num].readyForHarvest = false;
-    plots[num].watered = false;    
+    plots[num].watered = false;
 }
 
 function checkPlants() {
@@ -234,71 +233,78 @@ function checkPlants() {
 
         //pick an empty plot
 
+        //this plants in every plot, need to be able to pick which plot to plant in
         if (input === "plant") {
-            for (let i = 0; i < plots.length; i++) {
-                if (plots[i].occupyingPlot === false) {
-                    plots[i].dayPlanted = day;
-                    plots[i].age = day - parseInt(plots[i].dayPlanted);
-                    plots[i].nameOfplant = "Tomato";
-                    plots[i].occupyingPlot = true;
-                    plots[i].health = 50;
-                    plots[i].readyForHarvest = false;
-                    plots[i].watered = false;
+            thisInput = prompt("Which Plot Do you wanna plant in?");
+            if (thisInput < plots.length) {
+
+                if (!plots[thisInput].occupyingPlot) {
+                    plots[thisInput].age = day - parseInt(plots[thisInput].dayPlanted);
+                    plots[thisInput].nameOfplant = "Tomato";
+                    plots[thisInput].occupyingPlot = true;
+                    plots[thisInput].health = 50;
+                    plots[thisInput].readyForHarvest = false;
+                    plots[thisInput].watered = false;
+                    plots[thisInput].dayPlanted = day;
                     energy = energy - 10;
-                    break;
+                } else {
+                    console.log("There is already a plant here.")
                 }
+            }
+            else{
+                console.log("That is an invalid choice");
             }
 
         }
 
-        if(input === "water"){
+        if (input === "water") {
             thisInput = prompt("Which Plant?");
-            if(thisInput < plots.length){
-                if(plots[thisInput].occupyingPlot){
-                    if(plots[thisInput].readyForHarvest){
+            if (thisInput < plots.length) {
+                if (plots[thisInput].occupyingPlot) {
+                    if (plots[thisInput].readyForHarvest) {
                         console.log("This plant is ready for harvest!");
                     }
-                    else if(!plots[thisInput].watered){
+                    else if (!plots[thisInput].watered) {
                         plots[thisInput].watered = true;
                         plots[thisInput].health += 10;
                         energy = energy - 10;
-                    }else{
+                    } else {
                         console.log("this plant is already watered!");
                     }
                 }
-                else{
+                else {
                     console.log("There is nothing planted here")
                 }
             }
-            
+
         }
 
-        if(input === "harvest"){
+        if (input === "harvest") {
             thisInput = prompt("Which Plant?");
-            if(thisInput < plots.length){
-                if(plots[thisInput].readyForHarvest){
+            if (thisInput < plots.length) {
+                if (plots[thisInput].readyForHarvest) {
                     inventory.push(
-                            {
-                                name : plots[thisInput].nameOfplant, 
-                                health : plots[thisInput].health
-                            }
-                        );
+                        {
+                            name: plots[thisInput].nameOfplant,
+                            health: plots[thisInput].health
+                        }
+                    );
                     clearPlant(thisInput);
                     energy = energy - 10;
                 }
             }
-            else{
+            else {
                 console.log("This isnt a valid plot");
             }
         }
 
-        if(input ==="done"){
+        if (input === "done") {
             doneWithScene = true;
         }
 
-        if(!doneWithScene){
+        if (!doneWithScene) {
             input = prompt("PLANTS -> What do you want to do?: plant, water, harvest, done");
         }
-        
+
     }
 }
