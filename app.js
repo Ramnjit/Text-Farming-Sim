@@ -115,7 +115,7 @@ function checkStore() {
             thisInput = prompt("Which Plant?");
             if (thisInput < inventory.length) {
 
-                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
+                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].health)
                 console.log(`I will pay you $${price} for that.`)
             }
             else {
@@ -127,8 +127,8 @@ function checkStore() {
             thisInput = prompt("Which Plant?");
             if (thisInput < inventory.length) {
 
-                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
-                sellPlant(thisInput, inventory[thisInput].name, inventory[thisInput].age);
+                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].health)
+                sellPlant(thisInput, inventory[thisInput].name, inventory[thisInput].health);
 
                 console.log(`You got $${price} for that!`)
                 console.log(`Money: ${money}`);
@@ -191,8 +191,10 @@ function checkPlantHarvest(plant) {
 
 function checkPlantPrice(name, health) {
 
+    console.log(name, health, typeof(name), typeof(health));
+
     if (name === "Tomato") {
-        if (health > 30) {
+        if (parseInt(health) > 30) {
             return 100;
         }
         else {
