@@ -50,9 +50,7 @@ function mainFunc() {
         if(inventory.length>0){
             console.log(inventory[0]);            
         }
-
         
-
         while (!dayOver) {
 
             console.log("Main Menu");
@@ -110,10 +108,52 @@ function checkFarm() {
 
 function checkStore() {
 
-    //can sell crops here
-    //can buy crop seeds -> tomatos, onions or potatoes seeds.
+    let doneWithScene = false;
+
+    while (!doneWithScene) {
+        if(input === "check-price"){
+            thisInput = prompt("Which Plant?");
+                if(thisInput < inventory.length){
+    
+                    let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
+                    console.log(`I will pay you $${price} for that.`)
+                }
+                else{
+                    console.log("That is an invalid value")
+                }
+        }
+    
+        if(input === "sell"){
+            thisInput = prompt("Which Plant?");
+            if(thisInput < inventory.length){
+    
+                let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].age)
+                sellPlant(inventory[thisInput].name, inventory[thisInput].age);
+    
+                console.log(`You got $${price} for that!`)
+                console.log(`Money: ${money}`);
+    
+                
+    
+            }
+            else{
+                console.log("That is an invalid value")
+            }
+        }
+    
+        //can sell crops here
+    
+        //can buy crop seeds -> tomatos, onions or potatoes seeds.
 
 
+        if(input ==="done"){
+            doneWithScene = true;
+        }
+
+        if(!doneWithScene){
+            input = prompt("Do you want to sell or buy?: sell, check-price, done")
+        }
+    }
 }
 
 function endDay() {
@@ -148,16 +188,26 @@ function checkPlantHarvest(plant){
         if(plant.age > 3){
             plant.readyForHarvest = true;
         }
+    }
+}
 
+function checkPlantPrice(name, health){
+
+    if(name === "Tomato"){
+        if(health > 30){
+            return 100;
+        }
+        else{
+            return 50;
+        }
     }
 
 }
 
-function checkPlantPrice(name){
+function sellPlant(name, health){
 
-    if(name === "Tomato"){
-
-    }
+    inventory.splice(name, 1);
+    money = money + checkPlantPrice(name, health);
 
 }
 
@@ -173,14 +223,12 @@ function clearPlant(num){
 
 function checkPlants() {
 
-
     let doneWithScene = false;
     //check which element in plots is empty
 
     for (let i = 0; i < plots.length; i++) {
         console.log(plots[i]);
     }
-
 
     while (!doneWithScene) {
 
@@ -222,18 +270,20 @@ function checkPlants() {
                     console.log("There is nothing planted here")
                 }
             }
-            else{
-                
-            }
-
+            
         }
 
         if(input === "harvest"){
             thisInput = prompt("Which Plant?");
             if(thisInput < plots.length){
                 if(plots[thisInput].readyForHarvest){
-                    inventory.push(plots[thisInput]);
-                    //clearPlant(thisInput);
+                    inventory.push(
+                            {
+                                name : plots[thisInput].nameOfplant, 
+                                health : plots[thisInput].health
+                            }
+                        );
+                    clearPlant(thisInput);
                     energy = energy - 10;
                 }
             }
@@ -251,15 +301,4 @@ function checkPlants() {
         }
         
     }
-
 }
-
-//action 
-//inventory
-//store
-//sleep
-//quit
-
-//Day
-//Energy
-
