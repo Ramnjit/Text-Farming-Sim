@@ -32,20 +32,30 @@ let plots = [
 
 let gameOver = false;
 let dayOver = false;
-let day = 0;
+let quit = false;
+let day = 1;
 let money = 0;
 let energy = 0;
 let inventory = [];
 let input = "";
+const gameOverDay = 5;
 
 function mainFunc() {
 
+    
+
     while (!gameOver) {
+
+
+        if(day === gameOverDay){
+            gameOver = true;
+        }
 
         energy = 30;
         console.log(`It is day: ${day}`);
         console.log(`Your energy is ${energy}`);
         console.log(`Your money  is $${money}`);
+        console.log(`You have ${gameOverDay - day} days left.`);
 
         if (inventory.length > 0) {
             console.log(inventory);
@@ -67,7 +77,9 @@ function mainFunc() {
 
                 if (input === "game over" || input === "quit") {
                     dayOver = true;
+                    quit = true;
                     gameOver = true;
+                    
                 }
 
                 else if (input === "farm") {
@@ -89,7 +101,14 @@ function mainFunc() {
         dayOver = false;
     }
 
-    console.log("You ended the game");
+    if(quit){
+        console.log("You ended the game");
+    }
+    
+    if(gameOver && !quit){
+        console.log("Game Over");
+    }
+    
 }
 function checkInventory() {
 
@@ -310,3 +329,12 @@ function checkPlants() {
 
     }
 }
+
+
+
+//You have X days to pay off the farm
+//You buy seeds
+//plant seeds, water them, grow plants
+//harvest plants, sell them, buy more seeds
+//You can grow: Tomatos, Onions or Potatos
+//Each takes x number of days to grow
