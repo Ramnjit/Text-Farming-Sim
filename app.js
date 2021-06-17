@@ -34,34 +34,32 @@ let gameOver = false;
 let dayOver = false;
 let quit = false;
 let day = 1;
-let money = 0;
+let money = 300;
 let energy = 0;
-let inventory = [];
+let inventory= [];
+let inventorySeeds = [];
 let input = "";
-const gameOverDay = 5;
+const gameOverDay = 20;
 
 function mainFunc() {
 
-    
-
     while (!gameOver) {
-
-
-        if(day === gameOverDay){
-            gameOver = true;
-        }
 
         energy = 30;
         console.log(`It is day: ${day}`);
         console.log(`Your energy is ${energy}`);
         console.log(`Your money  is $${money}`);
-        console.log(`You have ${gameOverDay - day} days left.`);
+        console.log(`You have ${gameOverDay - day} days left to Make $1000`);
 
         if (inventory.length > 0) {
             console.log(inventory);
         }
 
         while (!dayOver) {
+
+            if (day === gameOverDay) {
+                gameOver = true;
+            }
 
             console.log("Main Menu");
             console.log(`Your Current energy is: ${energy}`);
@@ -79,17 +77,14 @@ function mainFunc() {
                     dayOver = true;
                     quit = true;
                     gameOver = true;
-                    
-                }
 
+                }
                 else if (input === "farm") {
                     checkFarm();
                 }
-
                 else if (input === "store") {
                     checkStore();
                 }
-
                 if (energy <= 0) {
                     dayOver = true;
                     day++;
@@ -101,14 +96,21 @@ function mainFunc() {
         dayOver = false;
     }
 
-    if(quit){
+    if (quit) {
         console.log("You ended the game");
     }
-    
-    if(gameOver && !quit){
-        console.log("Game Over");
+
+    if (gameOver && !quit) {
+
+        if(money < 1000){
+            console.log("Game Over You Lost");
+        }
+        else if(money >= 1000){
+            console.log("You Won!")
+        }
+        
     }
-    
+
 }
 function checkInventory() {
 
@@ -129,7 +131,11 @@ function checkStore() {
 
     let doneWithScene = false;
 
+
+
     while (!doneWithScene) {
+
+        //check crop prices
         if (input === "check-price") {
             thisInput = prompt("Which Plant?");
             if (thisInput < inventory.length) {
@@ -142,38 +148,76 @@ function checkStore() {
             }
         }
 
+        //sell crops
         if (input === "sell") {
             thisInput = prompt("Which Plant?");
-            if (thisInput < inventory.length) {
+            if (thisInput < inventory.length && inventory[thisInput].type === "crop") {
 
                 let price = checkPlantPrice(inventory[thisInput].name, inventory[thisInput].health)
                 sellPlant(thisInput, inventory[thisInput].name, inventory[thisInput].health);
 
                 console.log(`You got $${price} for that!`)
                 console.log(`Money: ${money}`);
-
-
-
             }
             else {
                 console.log("That is an invalid value")
             }
         }
 
-        //can sell crops here
+        //buy seeds
+        if (input === "buy") {
+            console.log("1: Tomato Seeds: 100");
+            console.log("2: Onion Seeds: 50");
+            console.log("3: Potato Seeds: 150");
 
-        //can buy crop seeds -> tomatos, onions or potatoes seeds.
+            seedChoice = prompt("Which seed do you wanna buy?");
 
+            if (parseInt(seedChoice) < 1 || parseInt(seedChoice) > 3) {
+                console.log("Invalid Choice");
+            }
+            else {
+                if (seedChoice === "1") {
+                    inventorySeeds.push({
+                        type: "seed",
+                        name: "Tomato"
+                    });
+                }
+                else if (seedChoice === "2") {
+                    inventorySeeds.push({
+                        type: "seed",
+                        name: "Onion"
+                    });
+                }
+                else if (seedChoice === "3") {
+                    inventorySeeds.push({
+                        type: "seed",
+                        name: "Potato"
+                    });
+                }
+            }
+        }
+
+        if (!doneWithScene) {
+            input = prompt("Do you want to sell or buy?: buy, sell, check-price, done")
+        }
 
         if (input === "done") {
             doneWithScene = true;
         }
 
-        if (!doneWithScene) {
-            input = prompt("Do you want to sell or buy?: sell, check-price, done")
-        }
+
     }
+
+    //can sell crops here
+
+    //can buy crop seeds -> tomatos, onions or potatoes seeds.
+
+
+
+
+
 }
+
 
 function endDay() {
     for (let i = 0; i < plots.length; i++) {
@@ -202,15 +246,28 @@ function checkPlantHarvest(plant) {
 
     if (plant.nameOfplant === "Tomato") {
 
-        if (plant.age > 3) {
+        if (plant.age > 5) {
             plant.readyForHarvest = true;
         }
     }
+    else if (plant.nameOfplant === "Onion") {
+
+        if (plant.age > 10) {
+            plant.readyForHarvest = true;
+        }
+    }
+    else if (plant.nameOfplant === "Potato") {
+
+        if (plant.age > 2) {
+            plant.readyForHarvest = true;
+        }
+    }
+
 }
 
 function checkPlantPrice(name, health) {
 
-    console.log(name, health, typeof(name), typeof(health));
+    console.log(name, health, typeof (name), typeof (health));
 
     if (name === "Tomato") {
         if (parseInt(health) > 30) {
@@ -218,6 +275,22 @@ function checkPlantPrice(name, health) {
         }
         else {
             return 50;
+        }
+    }
+    else if (name === "Onion") {
+        if (parseInt(health) > 30) {
+            return 200;
+        }
+        else {
+            return 10;
+        }
+    }
+    else if (name === "Potato") {
+        if (parseInt(health) > 30) {
+            return 50;
+        }
+        else {
+            return 10;
         }
     }
 
@@ -249,6 +322,9 @@ function checkPlants() {
     for (let i = 0; i < plots.length; i++) {
         console.log(plots[i]);
     }
+    for(let i =0; i < inventorySeeds.length; i++){
+        console.log(inventorySeeds[i].name);
+    }
 
     while (!doneWithScene) {
 
@@ -256,25 +332,53 @@ function checkPlants() {
 
         //this plants in every plot, need to be able to pick which plot to plant in
         if (input === "plant") {
-            thisInput = prompt("Which Plot Do you wanna plant in?");
-            if (thisInput < plots.length) {
 
-                if (!plots[thisInput].occupyingPlot) {
-                    plots[thisInput].age = day - parseInt(plots[thisInput].dayPlanted);
-                    plots[thisInput].nameOfplant = "Tomato";
-                    plots[thisInput].occupyingPlot = true;
-                    plots[thisInput].health = 50;
-                    plots[thisInput].readyForHarvest = false;
-                    plots[thisInput].watered = false;
-                    plots[thisInput].dayPlanted = day;
-                    energy = energy - 10;
-                } else {
-                    console.log("There is already a plant here.")
-                }
+            if(inventorySeeds.length < 1){
+                console.log("you dont have any seeds");
             }
             else{
-                console.log("That is an invalid choice");
+                thisInput = prompt("Which Plotz Do you wanna plant in?");
+                if (thisInput < plots.length) {
+                    
+                    
+    
+                    if (!plots[thisInput].occupyingPlot) {
+    
+                        //select a seed from your inventory 
+                        inventorySelection = prompt("Which Seed do you want to plant?");
+
+                        if(inventorySelection < inventorySeeds.length){
+                            plots[thisInput].age = day - parseInt(plots[thisInput].dayPlanted);
+                            plots[thisInput].nameOfplant = inventorySeeds[inventorySelection].name;
+                            plots[thisInput].occupyingPlot = true;
+                            plots[thisInput].health = 50;
+                            plots[thisInput].readyForHarvest = false;
+                            plots[thisInput].watered = false;
+                            plots[thisInput].dayPlanted = day;
+
+                            //remove plant
+                            inventorySeeds.splice(inventorySelection, 1);
+
+                            
+
+                            energy = energy - 10;
+                        }
+                        else{
+                            console.log("That is an invalid choice");
+                        }
+    
+                        
+
+                    } else {
+                        console.log("There is already a plant here.")
+                    }
+                }
+                else {
+                    console.log("That is an invalid choice");
+                }
             }
+
+
 
         }
 
@@ -306,6 +410,7 @@ function checkPlants() {
                 if (plots[thisInput].readyForHarvest) {
                     inventory.push(
                         {
+                            type: "crop",
                             name: plots[thisInput].nameOfplant,
                             health: plots[thisInput].health
                         }
